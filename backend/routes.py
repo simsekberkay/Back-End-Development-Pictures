@@ -59,14 +59,20 @@ def get_picture_by_id(id):
 # CREATE A PICTURE
 ######################################################################
 @app.route("/picture/<int:id>", methods=["POST"])
-def create_picture(id):
-    picture = request.get_json()
-    
-    if any(item["id"] == picture["id"] for item in data):
-        return jsonify({"Message": f"picture with id {picture['id']} already present"}), 302
-    
-    data.append(picture)
-    return jsonify(picture), 201
+def create_picture():
+    # get data from the json body
+    picture_in = request.json
+    print(picture_in)
+
+    # if the id is already there, return 303 with the URL for the resource
+    for picture in data:
+        if picture_in["id"] == picture["id"]:
+            return {
+                "Message": f"picture with id {picture_in['id']} already present"
+            }, 302
+
+    data.append(picture_in)
+    return picture_in, 201
 
 
 ######################################################################
@@ -96,12 +102,12 @@ def update_picture(id):
 ######################################################################
 @app.route("/picture/<int:id>", methods=["DELETE"])
 def delete_picture(id):
-    #picture = next((item for item in data if item["id"] == id), None)
-    
-    for item in data:
-        if item["id"] == str(id):
-            data.remove(item)
-            return '', 204
+    for picture in data:
+        if picture["id"] == id:
+            data.remove(picture)
+            return "", 204
+    return {"message": "picture not found"}, 404
+
 
 
     if picture is None:
